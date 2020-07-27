@@ -1,0 +1,5 @@
+GSS = Greatest Sum of Subsequence
+    = 最大子序列和
+
+LCS = Longest Common Subsequence
+    = 最长公共子序列
