@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 #define DEFAULT_CAPACITY 3
 
@@ -8,6 +9,8 @@ private:
     int _size;
     int _capacity;
     T* _elem;
+
+    bool isSorted = false;
 
 protected:
     void copyFrom(const T* a, int l, int r) {
@@ -42,6 +45,22 @@ protected:
         delete[] oldelem;
     }
     // Shrink container
+
+    int binSearch(const T& x, int l, int r) {
+        while (l < r) {
+            int m = (l + r) >> 1;
+            if (x < _elem[m]) r = m;
+            else if (x > _elem[m]) l = m + 1;
+            else return m;
+        }
+        return -1;
+    }
+    // Binary search
+
+    int fibSearch(const T& x, int l, int r) {
+        return -1;
+    }
+    // Fibonacci search
 
 public:
     myVector(int c = DEFAULT_CAPACITY) {
@@ -140,11 +159,24 @@ public:
     }
     // Uniquify the vector
     // Only applicable to sorted vector!
+
+    int search(std::string request, const T& x, int l, int r) {
+        if (request == "binary") return binSearch(x, l, r);
+        else if (request == "fibonacci") return fibSearch(x, l, r);
+        else throw "Unknown request!";
+    }
+
+    int search(std::string request, const T& x) {
+        return search(request, x, 0, _size);
+    }
+    // Search an element by its value
+    // More efficient than 'find'
+    // Only applicable to sorted vector!
 };
 
 int main() {
     myVector<int> a;
     for (int i = 0; i < 30; ++i) a.insert(0, i);
-    std::cout << a.find(23) <<std::endl;
+    for (int i = 0; i < 30; ++i) std::cout << a.search("binary", i) << ' ';
     return 0;
 }
