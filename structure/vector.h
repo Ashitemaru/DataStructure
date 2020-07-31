@@ -99,6 +99,49 @@ protected:
     }
     // Insert search
 
+    void bubbleSort() {
+        if (_size > 1)
+            for (int i = 0; i < _size - 1; i++)
+                for (int j = 0; j < _size - 1 - i; j++)
+                    if (_elem[j + 1] < _elem[j]) {
+                        T tmp = _elem[j];
+                        _elem[j] = _elem[j + 1];
+                        _elem[j + 1] = tmp;
+                    }
+        return;
+    }
+    // Bubble sort
+
+    void mergeSort(int l, int r) {
+        if (r - l < 2) return;
+        int m = (l + r) >> 1;
+        mergeSort(l, m);
+        mergeSort(m, r);
+
+        T* tmp = new T[_size];
+        int first = l;
+        int second = m;
+        int flag = l;
+
+        while (first < m && second < r) {
+            if (_elem[first] > _elem[second]) tmp[flag++] = _elem[second++];
+            else tmp[flag++] = _elem[first++];
+        }
+
+        while (first < m) tmp[flag++] = _elem[first++];
+        while (second < r) tmp[flag++] = _elem[second++];
+
+        for (int i = l; i < r; i++) _elem[i] = tmp[i];
+        delete[] tmp;
+        return;
+    }
+
+    void mergeSort() {
+        mergeSort(0, _size);
+        return;
+    }
+    // Merge sort
+
 public:
     myVector(int c = DEFAULT_CAPACITY) {
         _elem = new T[_capacity = c];
@@ -197,7 +240,8 @@ public:
     // Uniquify the vector
     // Only applicable to sorted vector!
 
-    int search(std::string request, const T& x, int l, int r) {
+    int search(const T& x, int l, int r, std::string request = "binary") {
+        if (!isSorted) throw "Not applicable to unsorted vector!";
         if (request == "binary") return binSearch(x, l, r);
         else if (request == "rBinary") return restrictedBinSearch(x, l, r);
         else if (request == "fibonacci") return fibSearch(x, l, r);
@@ -205,10 +249,29 @@ public:
         else throw "Unknown request!";
     }
 
-    int search(std::string request, const T& x) {
-        return search(request, x, 0, _size);
+    int search(const T& x, std::string request = "binary") {
+        return search(x, 0, _size, request);
     }
     // Search an element by its value
     // More efficient than 'find'
     // Only applicable to sorted vector!
+
+    void sort(std::string request = "merge") {
+        if (request == "bubble") bubbleSort();
+        else if (request == "merge") mergeSort();
+        else throw "Unknown request!";
+        isSorted = true;
+    }
+    // Sort the vector & set 'isSorted' true
+
+    friend std::ostream& operator<<(std::ostream& out, myVector<T>& src) {
+        out << '[';
+        if (src._size > 1) {
+            out << src.operator[](0);
+            for (int i = 1; i < src._size; ++i) out << ',' << src.operator[](i);
+        }
+        out << ']';
+        return out;
+    }
+    // Output the vector
 };
