@@ -5,3 +5,5 @@ algorithm/makefile
 
 structure/build/
 structure/makefile
+
+structure/main.cpp
