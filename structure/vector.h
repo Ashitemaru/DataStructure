@@ -1,7 +1,13 @@
+#pragma once
+
 #include <iostream>
 #include <string>
 
 #define DEFAULT_CAPACITY 3
+
+static int F[] = {
+    0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811, 514229, 832040, 1346269, 2178309, 3524578, 5702887, 9227465, 14930352, 24157817, 39088169, 63245986, 102334155, 165580141, 267914296, 433494437, 701408733, 1134903170, 1836311903
+};
 
 template <class T>
 class myVector {
@@ -57,10 +63,41 @@ protected:
     }
     // Binary search
 
+    int restrictedBinSearch(const T& x, int l, int r) {
+        while (l < r) {
+            int m = (l + r) >> 1;
+            x < _elem[m] ? r = m : l = m + 1;
+        }
+        return --l;
+    }
+    // Restricted binary search
+    // When more than 1 element equal to x
+    // It will return the element with the maximum index
+
     int fibSearch(const T& x, int l, int r) {
+        int fibSeed = r - l;
+        int ptr = l + F[fibSeed] - 1;
+        while (l < r) {
+            while (F[fibSeed] > r - l)
+                ptr = l + F[--fibSeed] - 1;
+            if (x == _elem[ptr]) return ptr;
+            else if (x < _elem[ptr]) r = ptr;
+            else l = ptr + 1;
+        }
         return -1;
     }
     // Fibonacci search
+
+    int insertSearch(const T& x, int l, int r) {
+        while (l < r) {
+            int m = l + ((r - l) * (x - _elem[l]) / (_elem[r] - _elem[l]));
+            if (x < _elem[m]) r = m;
+            else if (x > _elem[m]) l = m + 1;
+            else return m;
+        }
+        return -1;
+    }
+    // Insert search
 
 public:
     myVector(int c = DEFAULT_CAPACITY) {
@@ -162,7 +199,9 @@ public:
 
     int search(std::string request, const T& x, int l, int r) {
         if (request == "binary") return binSearch(x, l, r);
+        else if (request == "rBinary") return restrictedBinSearch(x, l, r);
         else if (request == "fibonacci") return fibSearch(x, l, r);
+        else if (request == "insert") return insertSearch(x, l, r);
         else throw "Unknown request!";
     }
 
@@ -173,10 +212,3 @@ public:
     // More efficient than 'find'
     // Only applicable to sorted vector!
 };
-
-int main() {
-    myVector<int> a;
-    for (int i = 0; i < 30; ++i) a.insert(0, i);
-    for (int i = 0; i < 30; ++i) std::cout << a.search("binary", i) << ' ';
-    return 0;
-}
